@@ -4,11 +4,12 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/ThemeContext";
-import ZombieView from "../../components/ZombieView";
-import TreeView from "../../components/TreeView";
-import StarshipView from "../../components/StarshipView";
-import RingGatesView from "../../components/RingGatesView";
-import EVAView from "../../components/EVAView";
+import ZombieView from "@/components/ZombieView";
+import TreeView from "@/components/TreeView";
+import StarshipView from "@components/StarshipView";
+import RingGatesView from "@/components/RingGatesView";
+import EVAView from "@/components/EVAView";
+import ZombieGardenView from "@/components/ZombieGardenView";
 
 const fakeContacts = [
   {
@@ -92,7 +93,7 @@ export function ThemePreviewLoader() {
 
   switch (theme) {
     case "zombie":
-      return <ZombieView data={fakeContacts} />;
+      return <ZombieGardenView data={fakeContacts} />;
     case "tree":
       return <TreeView data={fakeContacts} />;
     case "starship":
@@ -127,7 +128,7 @@ export default function ThemeSelector() {
   return (
     <div className="min-h-screen bg-gray-900 text-white p-10">
       <h1 className="text-4xl font-bold text-center mb-10">
-        Choose Your Interface Reality
+      🧠 Theme Selector Works!
       </h1>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {themes.map((theme) => (

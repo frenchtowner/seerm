@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTheme } from "@/ThemeContext";
 import TreeView from "../../components/TreeView";
 
 const fakeContacts = [
@@ -25,6 +26,9 @@ const fakeContacts = [
 ];
 
 export default function PreviewPage() {
+  const { theme } = useTheme();
+  console.log("Theme is:", theme);
+  
   return (
     <main className="min-h-screen p-6 bg-white">
       <TreeView data={fakeContacts} />
