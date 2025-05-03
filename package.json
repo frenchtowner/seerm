@@ -1,6 +1,7 @@
 {
-    "name": "connect-tree-site",
+    "name": "seerm",
     "version": "1.0.0",
+    "description": "SeeRM — Visual CRM for humans, not spreadsheets.",
     "private": true,
     "scripts": {
         "dev": "next dev",

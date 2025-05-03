@@ -2,12 +2,9 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import { Contact } from "@/types";
-import MetaGrid from "@/components/MetaGrid";
-import Composer from "@/components/Composer";
-import { handleContact } from "@/lib/handleContact";
 
 async function fetchContactsFromSheet() {
-  const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRQnHM-0hWZayDCaKBce1JSJ8G15Quz4IBpTBUos9Mir4gkFR8_aXqi55KTzAXeSUHehSNd5HCdpxZ4/pub?output=csv';
+  const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRQnHM-0hWZayDCaKBce1JSJ8G15Quz4IBpTBUos9Mir4gkFR8_aXqi55KTzAXeSUHehSNd5HCdpxZ4/pub?output=csv'; // Replace with your published Google Sheet CSV URL
   const res = await fetch(sheetUrl);
   const text = await res.text();
   const rows = text.split('\n').map((row) => row.split(','));
@@ -18,7 +15,7 @@ async function fetchContactsFromSheet() {
     .map((row) => {
       const contact: any = {};
       row.forEach((cell, index) => {
-        const header = headers[index];
+        const header = headers[index]?.trim().toLowerCase(); // <-- lowercase headers!
         if (header && cell) {
           contact[header.trim()] = cell.trim();
         }
@@ -91,7 +88,7 @@ export default function FruitstormView() {
       [id]: { date: now.toLocaleString(), method }
     }));
     console.log(`✔️ Recorded ${method} for ${id} at ${now.toISOString()}`);
-  };
+  }
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-white" onContextMenu={handleRightClick}>
@@ -139,12 +136,12 @@ export default function FruitstormView() {
                 <div className="absolute bottom-1 text-[10px] text-white opacity-80 w-full text-center z-0">
                   {new Date(lastTouch.date).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: '2-digit' })} ({lastTouch.method === 'email' ? 'em' : lastTouch.method === 'text' ? 'tx' : 'gf'})
                 </div>
-              )}
+                {/* Insert Tiny Buttons here! */}
               {activeContactId === c.id && (
                 <div className="absolute bottom-2 flex space-x-2">
-                  <button onClick={() => handleContact(setActiveContactId, setMessageMethod, setShowComposer, c.id, 'email')} className="bg-blue-500 text-white rounded px-2 py-1 text-xs">✉️</button>
-                  <button onClick={() => handleContact(setActiveContactId, setMessageMethod, setShowComposer, c.id, 'text')} className="bg-green-500 text-white rounded px-2 py-1 text-xs">📱</button>
-                  <button onClick={() => handleContact(setActiveContactId, setMessageMethod, setShowComposer, c.id, 'gift')} className="bg-yellow-500 text-black rounded px-2 py-1 text-xs">🎁</button>
+                  <button onClick={() => handleContact(c.id, 'email')} className="bg-blue-500 text-white rounded px-2 py-1 text-xs">✉️</button>
+                  <button onClick={() => handleContact(c.id, 'text')} className="bg-green-500 text-white rounded px-2 py-1 text-xs">📱</button>
+                  <button onClick={() => handleContact(c.id, 'gift')} className="bg-yellow-500 text-black rounded px-2 py-1 text-xs">🎁</button>
                 </div>
               )}
             </div>
@@ -159,21 +156,96 @@ export default function FruitstormView() {
         );
       })}
 
+      {/* MetaGrid and Composer JSX goes here... */}
       {metaGridOpen && (
-        <MetaGrid
-          contacts={contacts}
-          lastContactMap={lastContactMap}
-          onClose={handleCloseMetaGrid}
-        />
+        <>
+          <div onClick={handleCloseMetaGrid} className="fixed inset-0 z-30" />
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40" onClick={handleCloseMetaGrid}>
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(4rem,1fr))] gap-2 bg-white p-4 rounded-lg relative w-full max-w-5xl" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={(e) => { e.stopPropagation(); handleCloseMetaGrid(); }}
+                className="absolute top-2 right-2 text-black bg-white rounded-full px-2 py-1 shadow hover:bg-gray-200 text-xs z-50"
+              >
+                ❌
+              </button>
+              {contacts.map((c) => (
+                <div
+                  key={c.id}
+                  className="relative group w-16 h-16 flex items-center justify-center text-xs font-bold text-white cursor-pointer"
+                  style={{ backgroundColor: urgencyColor(c.urgency) }}
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setMetaPanelPosition({ x: rect.right + 10, y: rect.top });
+                    setActiveContactId(c.id);
+                  }}
+                >
+                  <div className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1">
+                    {c.name}
+                  </div>
+                </div>
+              ))}
+              <div className="absolute bottom-4 right-4 bg-white bg-opacity-90 p-2 rounded shadow-md text-xs">
+                <div><span className="inline-block w-3 h-3 bg-red-500 mr-2 rounded-full"></span> Critical</div>
+                <div><span className="inline-block w-3 h-3 bg-orange-400 mr-2 rounded-full"></span> High</div>
+                <div><span className="inline-block w-3 h-3 bg-yellow-400 mr-2 rounded-full"></span> Medium</div>
+                <div><span className="inline-block w-3 h-3 bg-green-400 mr-2 rounded-full"></span> Low</div>
+                <div><span className="inline-block w-3 h-3 bg-blue-300 mr-2 rounded-full"></span> Cool</div>
+                <div><span className="inline-block w-3 h-3 bg-gray-300 mr-2 rounded-full"></span> Dormant</div>
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
+      {activeContactId && metaGridOpen && (
+        <div className="absolute bg-white p-3 rounded shadow-lg z-50 w-48" style={{ top: metaPanelPosition?.y ?? 0, left: metaPanelPosition?.x ?? 0 }}>
+          <h2 className="font-bold text-lg mb-2">{getContactById(activeContactId)?.name}</h2>
+          <p className="text-sm">Status: {getContactById(activeContactId)?.status}</p>
+          <p className="text-sm">Urgency: {getContactById(activeContactId)?.urgency}</p>
+          <p className="text-xs text-gray-500 mt-2">Last Contact: {lastContactMap[activeContactId]?.date || '—'} ({lastContactMap[activeContactId]?.method || '—'})</p>
+          <p className="text-xs text-gray-500">Type: —</p>
+          <p className="text-xs text-gray-500">Notes: —</p>
+        </div>
+      )}
       {showComposer && (
-        <Composer
-          contact={getContactById(activeContactId)}
-          method={messageMethod}
-          onClose={() => setShowComposer(false)}
-          onSend={(id, method) => recordContact({ id, method })}
-        />
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded shadow-lg w-96 relative">
+            <h2 className="text-lg font-bold mb-2">
+              {messageMethod === 'email' ? 'Compose Email' : 'Send Text'}
+            </h2>
+            <textarea
+              value={messageText}
+              onChange={(e) => setMessageText(e.target.value)}
+              placeholder="Type your message here..."
+              className="w-full h-32 p-2 border border-gray-300 rounded mb-4"
+            />
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-3 py-1 bg-gray-300 rounded"
+                onClick={() => setShowComposer(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-3 py-1 bg-blue-500 text-white rounded"
+                onClick={() => {
+                  if (activeContactId && messageMethod) {
+                    recordContact({ id: activeContactId, method: messageMethod });
+                    console.log(
+                      `FAUX ${messageMethod.toUpperCase()} to ${getContactById(activeContactId)?.name
+                      }:`,
+                      messageText
+                    );
+                    setShowComposer(false);
+                    setMessageText('');
+                  }
+                }}
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
