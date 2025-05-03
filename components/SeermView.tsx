@@ -37,7 +37,7 @@ function urgencyColor(urgency: number): string {
   return colors[0];
 }
 
-export default function FruitstormView() {
+export default function SeermView() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [metaGridOpen, setMetaGridOpen] = useState<boolean>(false);
