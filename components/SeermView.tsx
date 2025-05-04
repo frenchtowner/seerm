@@ -5,6 +5,7 @@ import { Contact } from "@/types";
 import MetaGrid from "@/components/MetaGrid";
 import Composer from "@/components/Composer";
 import { handleContact } from "@/lib/handleContact";
+import { urgencyColor } from "@/lib/urgencyColor";
 
 async function fetchContactsFromSheet() {
   const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRQnHM-0hWZayDCaKBce1JSJ8G15Quz4IBpTBUos9Mir4gkFR8_aXqi55KTzAXeSUHehSNd5HCdpxZ4/pub?output=csv';
@@ -25,16 +26,6 @@ async function fetchContactsFromSheet() {
       });
       return contact;
     });
-}
-
-function urgencyColor(urgency: number): string {
-  const colors = ["#d1d5db", "#a5b4fc", "#6ee7b7", "#facc15", "#f97316", "#ef4444"];
-  if (urgency >= 9) return colors[5];
-  if (urgency >= 7) return colors[4];
-  if (urgency >= 5) return colors[3];
-  if (urgency >= 3) return colors[2];
-  if (urgency >= 1) return colors[1];
-  return colors[0];
 }
 
 export default function SeermView() {
@@ -108,10 +99,10 @@ export default function SeermView() {
 
       {positionedContacts.map((c) => {
         const lastTouch = lastContactMap[c.id];
-        const urgency = lastTouch ? 1 : c.urgency;
+        const urgency = lastTouch ? 1 : Number(c.urgency) || 5;
         const width = lastTouch ? 220 : urgency * (Math.random() > 0.5 ? 90 : 130);
         const height = lastTouch ? 150 : urgency * (Math.random() > 0.5 ? 70 : 120);
-        const color = urgencyColor(Number(urgency));
+        const color = urgencyColor(urgency);
         return (
           <div
             key={c.id}

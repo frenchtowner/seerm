@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Contact } from "@/types";
+import { urgencyColor } from "@/lib/urgencyColor";
 
 interface MetaGridProps {
     contacts: Contact[];
@@ -31,17 +32,23 @@ export default function MetaGrid({ contacts, lastContactMap, onClose }: MetaGrid
                         ❌
                     </button>
 
-                    {contacts.map((c) => (
-                        <div
-                            key={c.id}
-                            className="relative group w-16 h-16 flex items-center justify-center text-xs font-bold text-white cursor-pointer"
-                            style={{ backgroundColor: c.urgency ? "#facc15" : "#6ee7b7" }}
-                        >
-                            <div className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1">
+                    {contacts.map((c) => {
+                        const urgency = Number(c.urgency) || 5;
+                        const color = urgencyColor(urgency);
+
+                        return (
+                            <div
+                                key={c.id}
+                                className="relative group w-16 h-16 flex items-center justify-center text-xs font-bold text-white cursor-pointer"
+                                style={{ backgroundColor: color }}
+                            >
+                                <div className="absolute bottom-full mb-1 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1">
+                                    {c.name}
+                                </div>
                                 {c.name}
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
 
                     <div className="absolute bottom-4 right-4 bg-white bg-opacity-90 p-2 rounded shadow-md text-xs">
                         <div><span className="inline-block w-3 h-3 bg-red-500 mr-2 rounded-full"></span> Critical</div>
