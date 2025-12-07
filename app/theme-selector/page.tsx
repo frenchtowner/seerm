@@ -1,4 +1,4 @@
-// ThemeSelector.tsx
+// Theme Selector
 "use client";
 
 import React, { useEffect } from "react";
@@ -10,6 +10,7 @@ import StarshipView from "@components/StarshipView";
 import RingGatesView from "@/components/RingGatesView";
 import EVAView from "@/components/EVAView";
 import ZombieGardenView from "@/components/ZombieGardenView";
+import SeeTrack from "@/components/SeeTrack";
 
 const fakeContacts = [
   {
@@ -115,7 +116,7 @@ export default function ThemeSelector() {
     const saved = localStorage.getItem("theme");
     if (saved) {
       setTheme(saved);
-      router.push("/preview");
+      // router.push("/preview");
     }
   }, [setTheme, router]);
 
@@ -128,7 +129,7 @@ export default function ThemeSelector() {
   return (
     <div className="min-h-screen bg-gray-900 text-white p-10">
       <h1 className="text-4xl font-bold text-center mb-10">
-      🧠 Theme Selector Works!
+        🧠 Theme Selector Works!
       </h1>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {themes.map((theme) => (

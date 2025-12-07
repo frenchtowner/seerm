@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";   // THIS GOES HERE, LIKE A NORMAL IMPORT 
 
 export default function HomePage() {
   const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-gray-50 text-gray-900 font-sans">
       <div className="max-w-4xl mx-auto p-6 space-y-10">
 
-        {/* Auth Form */}
+        {/* ✅ Auth Form Section */}
         <div className="bg-white p-6 rounded shadow-md border">
           <div className="flex space-x-4 mb-4">
             <button
@@ -48,17 +49,14 @@ export default function HomePage() {
           </div>
         </div>
 
-        import Link from "next/link"
-
-        // Then inside your return JSX, anywhere you'd like:
-        <Link href="/add-contact">
-          <button className="mt-4 px-4 py-2 bg-green-600 text-white rounded">
+        {/* ✅ Add Contact Button */}
+        <Link href="/add-contact" className="mt-4 inline-block">
+          <button className="px-4 py-2 bg-green-600 text-white rounded">
             ➕ Add New Contact
           </button>
         </Link>
 
-
-        {/* Theme Picker */}
+        {/* ✅ Theme Picker Section */}
         <div className="space-y-8">
           <h1 className="text-3xl font-bold flex items-center gap-2">
             🎨 Pick Your Style
