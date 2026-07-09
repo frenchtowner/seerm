@@ -1,5 +1,4 @@
 // app/seerm-view/page.tsx
-Fix: Move Supabase client to client - side for Netlify build
 "use client";
 
 import { useEffect, useState } from "react";
@@ -17,9 +16,9 @@ export default function SeermViewPage() {
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         );
-
+        
         const { data, error } = await supabase.from("contacts").select("*");
-
+        
         if (error) throw error;
         setData(data);
       } catch (err) {
@@ -33,7 +32,7 @@ export default function SeermViewPage() {
   }, []);
 
   if (loading) return <div className="p-6">Loading...</div>;
-
+  
   if (error) {
     return (
       <main className="min-h-screen bg-white p-6">
